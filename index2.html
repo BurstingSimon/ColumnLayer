@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>ArcGIS API for Javascript ColumnLayer 柱状图展示</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/3.20/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css">
+    <style type="text/css">
+        html,body{
+            width: 100%;
+            height:100%;
+            padding: 0px;
+            margin: 0;
+        }
+        header,#map{
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding:0px;
+        }
+        #map{
+            border:0px solid #ff0000;
+        }
+    </style>
+    <script>
+        var dojoConfig = {
+            parseOnLoad: true,
+            packages: [{
+                "name": "extension",
+                "location": location.pathname.replace(/\/[^/]+$/, '') + "/extension"
+            }]
+        };
+    </script>
+    <script src="https://js.arcgis.com/3.20/"></script>
+    <script type="text/javascript">
+        require(["esri/map", "esri/layers/ArcGISTiledMapServiceLayer",
+            "dojo/dom", "dojo/on", "dojo/dom-class", "extension/ColumnLayer","dojo/domReady!"],
+                function(Map, ArcGISTiledMapServiceLayer, dom, on, domClass,ColumnLayer) {
+                    var map = new Map("map", {
+                        basemap: "gray",
+                        center: [100.69828872684525, 34.24237112174851], // long, lat
+                        zoom: 5,
+                        sliderStyle: "small",
+                        wrapAround180:false,
+                        maxZoom:8,
+                        minZoom:4
+                    });
+
+                    var data1={x: 13567611.673366752,y:5174359.8470072355,attributes:{'name':'AA地区','指标一':30,'指标二':40,'指标三':50,'指标四':60,'指标五':70}};
+                    var data2={x: 12041317.092568759,y:4988464.994217737,attributes:{'name':'BB地区','指标一':50,'指标二':60,'指标三':20,'指标四':160,'指标五':80}};
+                    var data3={x: 11131410.707862262,y:4328049.069833989,attributes:{'name':'CC地区','指标一':50,'指标二':60,'指标三':120,'指标四':60,'指标五':80}};
+                    var data4={x: 13303445.303613253,y:3594253.5982964924,attributes:{'name':'DD地区','指标一':50,'指标二':60,'指标三':20,'指标四':60,'指标五':80}};
+                    var data5={x: 11782042.69262551,y:3061028.8889792445,attributes:{'name':'EE地区','指标一':250,'指标二':60,'指标三':120,'指标四':60,'指标五':80}};
+                    var data6={x: 10485670.692909265,y:4010071.03216774,attributes:{'name':'FF地区','指标一':150,'指标二':60,'指标三':20,'指标四':60,'指标五':80}};
+                    var data7={x: 8749021.410270521,y:5052060.601750986,attributes:{'name':'GG地区','指标一':50,'指标二':160,'指标三':20,'指标四':60,'指标五':80}};
+                    //'#C1232B','#B5C334','#FCCE10','#E87C25','#27727B',
+                    //'#FE8463','#9BCA63','#FAD860','#F3A43B','#60C0DD',
+                    // '#D7504B','#C6E579','#F4E001','#F0805A','#26C0C0'
+
+                    var colors={'指标一':"#C1232B",'指标二':'#B5C334','指标三':'#FCCE10',
+                        '指标四':'#E87C25','指标五':'#27727B'};
+
+                    var columnLayer= new ColumnLayer({colors:colors,width:50,height:50,data:[data1,data2,data3,data4,data5]});
+                    map.addLayer(columnLayer);
+                    //or 有也可以通过 columnLayer.add()来动态地添加Column 比如
+                    columnLayer.add(data6);
+                    columnLayer.add(data7);
+                    //在click ，mouse-move ，mouse-over，mouse-down mouse-up事件里 可以获得被点击哪一个Pie的 哪一部分 如下
+                    on(columnLayer,'mouse-move',function(e){
+                        var columndata=e.columndata; //通过e.piedata可以获得当前区域的所有的数据的集合如{'name':'AA地区','指标一':30,'指标二':40,'指标三':50,'指标四':60,'指标五':70}
+                        if(columndata){
+                            var  name=columndata.name;
+                            var slecetedata=e.slecetedata;
+                            map.infoWindow.setContent(name+"   "+JSON.stringify(slecetedata));
+                            map.infoWindow.show(e.mapPoint);
+                        }
+                    });
+
+                    on(columnLayer,'mouse-out',function(e){
+                        map.infoWindow.hide();
+                    });
+                });
+    </script>
+    <head></head>
+    <body>
+        <div id='map'></div>
+    </body>
+</html>
