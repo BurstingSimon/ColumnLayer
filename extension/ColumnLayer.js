@@ -32,6 +32,7 @@ define(["dojo/_base/declare", "esri/layers/GraphicsLayer", "esri/geometry/Point"
                 var y = this.height - height;
                 this.columns.push({
                     name: d,
+                    value: this.data[d],
                     width:width,
                     height:height,
                     x: x,
@@ -40,7 +41,6 @@ define(["dojo/_base/declare", "esri/layers/GraphicsLayer", "esri/geometry/Point"
                 j++;
             }
         }
-        console.log(this.columns);
         this.draw(-1);
     }
     Column.prototype.getAreaIndex = function(dx, dy) {
@@ -167,6 +167,12 @@ define(["dojo/_base/declare", "esri/layers/GraphicsLayer", "esri/geometry/Point"
             }
         },
         onGraphicAdd: function() {},
+        _getScreenPoint: function (mapPoint) {
+            if (mapPoint != null) {
+                var _map = this.getMap();
+                return _map.toScreen(mappt);
+            }
+        },
         _getMouseOffset:function(e){
             var mappt = e.mapPoint;
             var graphic = e.graphic;
@@ -224,6 +230,22 @@ define(["dojo/_base/declare", "esri/layers/GraphicsLayer", "esri/geometry/Point"
         onMouseUp: function(e) {
             this._extenteventarg(e);
         },
+        _drawToolTip: function (column, x, y) {
+            if (!this.toolTip) {
+                this.toolTip = document.createElement("div");
+                document.body.appendChild(this.toolTip);
+            }
+            this.toolTip.style.display = "block";
+            this.toolTip.style.background = "rgba(50, 50, 50, 0.701961)";
+            this.toolTip.style.position = "absolute";
+            this.toolTip.style.padding = "5px";
+            this.toolTip.style.zindex = "99999";
+            this.toolTip.style.color = "#fff";
+            this.toolTip.style.borderRadius = "4px";
+            this.toolTip.style.top = y + 20 + "px";
+            this.toolTip.style.left = x + 20 + "px";
+            this.toolTip.innerHTML = column.name + "<br/>" + column.value;
+        },
         _extenteventarg:function(e){
             var column = e.graphic.column;
             if(e.graphic.selectedindex>=0){
@@ -233,6 +255,9 @@ define(["dojo/_base/declare", "esri/layers/GraphicsLayer", "esri/geometry/Point"
                     e.slecetedata={};
                     e.slecetedata[sname]=column.data[sname];
                     e.columndata=column.data;
+                    var mappt = e.mapPoint;
+                    var screenPt = this.getMap().toScreen(mappt);
+                    this._drawToolTip(c, screenPt.x, screenPt.y);
                 }
             }
         },
@@ -251,6 +276,7 @@ define(["dojo/_base/declare", "esri/layers/GraphicsLayer", "esri/geometry/Point"
                 graphic.setSymbol(sym)
                 e.graphic.selectedindex=-1;
             }
+            if (this.toolTip)this.toolTip.style.display = "none";
             this._extenteventarg(e);
         }
 
