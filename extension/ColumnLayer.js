@@ -279,6 +279,5 @@ define(["dojo/_base/declare", "esri/layers/GraphicsLayer", "esri/geometry/Point"
             if (this.toolTip)this.toolTip.style.display = "none";
             this._extenteventarg(e);
         }
-
     })
 });
