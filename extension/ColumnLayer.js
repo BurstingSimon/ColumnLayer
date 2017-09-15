@@ -92,7 +92,6 @@ define(["dojo/_base/declare", "esri/layers/GraphicsLayer", "esri/geometry/Point"
         ctx.closePath();
         ctx.stroke();
     }
-
     return declare([GraphicsLayer], {
         constructor: function(options) {
             // width  Number?
