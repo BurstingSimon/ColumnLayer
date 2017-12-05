@@ -1,3 +1,6 @@
+/**
+ * 首先定义Column对象，然后把Column转成图片，最后调用PictureMarkerSymbol渲染
+ */
 define(["dojo/_base/declare", "esri/layers/GraphicsLayer", "esri/geometry/Point", "esri/SpatialReference",
     "esri/graphic", "esri/symbols/PictureMarkerSymbol","esri/geometry/webMercatorUtils","dojo/_base/lang"
 ], function(declare, GraphicsLayer, Point, SpatialReference,Graphic, PictureMarkerSymbol,webMercatorUtils,lang) {
@@ -115,6 +118,20 @@ define(["dojo/_base/declare", "esri/layers/GraphicsLayer", "esri/geometry/Point"
             this.selectedlinecolor=options.selectedlinecolor||"#ff0000";
             this.spatialReference=options.spatialReference|| new SpatialReference({wkid:102100});
             this.data=options.data||[];
+            this.max = 0;
+            this._setMax();
+        },
+        _setMax: function () {
+            for (var i = 0; i < this.data.length; i++) {
+                var columnAttr = this.data[i].attributes;
+                for (var d in columnAttr) {
+                    if (this.colorConfig.hasOwnProperty(d)) {
+                        if (columnAttr[d] > this.max) {
+                            this.max = columnAttr[d];
+                        }
+                    }
+                }
+            }
         },
         _setMap: function(map, surface){
             if(this.data){
@@ -148,7 +165,8 @@ define(["dojo/_base/declare", "esri/layers/GraphicsLayer", "esri/geometry/Point"
                 {
                     x=e.x;y=e.y;
                 }
-                center = new Point(e.x,e.y, this.spatialReference);
+                center = new Point(x, y, this.spatialReference);
+                console.log(center);
                 var column = new Column(e.attributes,this.colorConfig,250,this.width,this.height,center);
                 var imagedata = column.getImageData();
                 var json = {
