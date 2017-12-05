@@ -1,5 +1,7 @@
 /**
+ *
  * 首先定义Column对象，然后把Column转成图片，最后调用PictureMarkerSymbol渲染
+ *
  */
 define(["dojo/_base/declare", "esri/layers/GraphicsLayer", "esri/geometry/Point", "esri/SpatialReference",
     "esri/graphic", "esri/symbols/PictureMarkerSymbol","esri/geometry/webMercatorUtils","dojo/_base/lang"
